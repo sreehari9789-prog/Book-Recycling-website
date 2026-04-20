@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Book Recycler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/book-recycler/assets/css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f1e, #1a1a2e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .circle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255,107,107,0.3), transparent);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(100px, -100px) scale(1.2); }
+        }
+
+        .signup-container {
+            width: 100%;
+            max-width: 550px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .signup-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .signup-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .signup-header h2 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .signup-header p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ff6b6b;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .input-wrapper input:focus + i {
+            color: #ff8e53;
+        }
+
+        /* Password strength indicator */
+        .password-strength {
+            margin-top: 0.5rem;
+            height: 4px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .strength-text {
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .btn-signup {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            border: none;
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255,107,107,0.3);
+        }
+
+        .btn-signup:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .login-link a {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .terms {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .terms a {
+            color: #ff6b6b;
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Animation */
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(255,107,107,0.1);
+            border-left: 3px solid #ff6b6b;
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .info-box i {
+            color: #ff6b6b;
+            margin-right: 0.5rem;
+        }
+
+        .info-box p {
+            color: rgba(255,255,255,0.7);
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="circle" style="width: 300px; height: 300px; top: -100px; right: -100px; animation-delay: 0s;"></div>
+        <div class="circle" style="width: 200px; height: 200px; bottom: -50px; left: -50px; animation-delay: 5s;"></div>
+        <div class="circle" style="width: 150px; height: 150px; top: 50%; left: 50%; animation-delay: 10s;"></div>
+    </div>
+
+    <div class="signup-container">
+        <div class="signup-card">
+            <div class="signup-header">
+                <i class="fas fa-user-plus" style="font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
+                <h2>Create Account</h2>
+                <p>Join our book community today</p>
+            </div>
+
+            <!-- Info Box about Unique IDs -->
+            <div class="info-box">
+                <i class="fas fa-id-card"></i>
+                <p><strong>Unique User ID:</strong> When you sign up, a unique ID will be automatically generated for you (e.g., USR1703123456789). This ID will be used for all your transactions.</p>
+            </div>
+
+            <form id="signup-form">
+                <div class="input-group">
+                    <label>Full Name *</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="full_name" required placeholder="Enter your full name">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Email Address *</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" required placeholder="Enter your email">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Phone Number (Optional)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="phone" placeholder="Enter your phone number">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Password *</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" required placeholder="Create a password (min 6 characters)">
+                    </div>
+                    <div class="password-strength" id="passwordStrength"></div>
+                    <div class="strength-text" id="strengthText"></div>
+                </div>
+
+                <div class="input-group">
+                    <label>Confirm Password *</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirm_password" required placeholder="Confirm your password">
+                    </div>
+                    <div id="passwordMatchMsg" style="font-size: 0.7rem; margin-top: 0.25rem;"></div>
+                </div>
+
+                <button type="submit" class="btn-signup" id="signupBtn">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+            </form>
+
+            <div class="login-link">
+                Already have an account? <a href="/book-recycler/pages/login.html">Login</a>
+            </div>
+            <div class="terms">
+                By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p style="color: white;">Creating your account...</p>
+        <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Generating unique User ID...</p>
+    </div>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Check if user is already logged in
+            const authToken = localStorage.getItem('auth_token');
+            if (authToken) {
+                // If already logged in, redirect to dashboard
+                window.location.href = '/book-recycler/pages/dashboard.html';
+                return;
+            }
+
+            // GSAP Animation
+            gsap.from('.signup-card', {
+                duration: 0.8,
+                y: 50,
+                opacity: 0,
+                ease: 'power3.out'
+            });
+
+            gsap.from('.input-group', {
+                duration: 0.6,
+                x: -30,
+                opacity: 0,
+                stagger: 0.1,
+                delay: 0.3,
+                ease: 'power3.out'
+            });
+
+            gsap.from('.btn-signup', {
+                duration: 0.6,
+                scale: 0.9,
+                opacity: 0,
+                delay: 0.6,
+                ease: 'back.out(1.7)'
+            });
+
+            // Password strength checker
+            const passwordInput = document.getElementById('password');
+            const strengthDiv = document.getElementById('passwordStrength');
+            const strengthText = document.getElementById('strengthText');
+
+            function checkPasswordStrength(password) {
+                let strength = 0;
+                let message = '';
+                let color = '';
+
+                if (password.length >= 6) strength++;
+                if (password.length >= 10) strength++;
+                if (password.match(/[a-z]+/)) strength++;
+                if (password.match(/[A-Z]+/)) strength++;
+                if (password.match(/[0-9]+/)) strength++;
+                if (password.match(/[$@#&!]+/)) strength++;
+
+                switch(strength) {
+                    case 0:
+                    case 1:
+                        message = 'Very Weak';
+                        color = '#e74c3c';
+                        break;
+                    case 2:
+                        message = 'Weak';
+                        color = '#e67e22';
+                        break;
+                    case 3:
+                        message = 'Fair';
+                        color = '#f39c12';
+                        break;
+                    case 4:
+                        message = 'Good';
+                        color = '#3498db';
+                        break;
+                    case 5:
+                    case 6:
+                        message = 'Strong';
+                        color = '#27ae60';
+                        break;
+                }
+
+                strengthDiv.style.backgroundColor = color;
+                strengthDiv.style.width = `${(strength / 6) * 100}%`;
+                strengthText.textContent = message;
+                strengthText.style.color = color;
+                
+                return strength >= 3;
+            }
+
+            passwordInput.addEventListener('input', (e) => {
+                checkPasswordStrength(e.target.value);
+                checkPasswordMatch();
+            });
+
+            // Password match checker
+            const confirmInput = document.getElementById('confirm_password');
+            const matchMsg = document.getElementById('passwordMatchMsg');
+
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirm = confirmInput.value;
+                
+                if (confirm.length === 0) {
+                    matchMsg.textContent = '';
+                    return true;
+                }
+                
+                if (password === confirm) {
+                    matchMsg.textContent = '✓ Passwords match';
+                    matchMsg.style.color = '#27ae60';
+                    return true;
+                } else {
+                    matchMsg.textContent = '✗ Passwords do not match';
+                    matchMsg.style.color = '#e74c3c';
+                    return false;
+                }
+            }
+
+            confirmInput.addEventListener('input', checkPasswordMatch);
+
+            // Real-time email validation
+            const emailInput = document.getElementById('email');
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            // Form submission
+            const signupForm = document.getElementById('signup-form');
+            const signupBtn = document.getElementById('signupBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Get form values
+                const fullName = document.getElementById('full_name').value.trim();
+                const email = emailInput.value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const password = passwordInput.value;
+                const confirm = confirmInput.value;
+                
+                // Validate full name
+                if (fullName.length < 2) {
+                    showNotification('Please enter your full name', 'error');
+                    document.getElementById('full_name').focus();
+                    return;
+                }
+                
+                // Validate email
+                if (!validateEmail(email)) {
+                    showNotification('Please enter a valid email address', 'error');
+                    emailInput.focus();
+                    return;
+                }
+                
+                // Validate password
+                if (password.length < 6) {
+                    showNotification('Password must be at least 6 characters', 'error');
+                    passwordInput.focus();
+                    return;
+                }
+                
+                // Check password match
+                if (password !== confirm) {
+                    showNotification('Passwords do not match', 'error');
+                    confirmInput.focus();
+                    return;
+                }
+                
+                // Check password strength
+                if (!checkPasswordStrength(password)) {
+                    showNotification('Please choose a stronger password', 'error');
+                    passwordInput.focus();
+                    return;
+                }
+                
+                // Prepare form data
+                const formData = {
+                    full_name: fullName,
+                    email: email,
+                    password: password,
+                    phone: phone || ''
+                };
+                
+                // Show loading state
+                signupBtn.disabled = true;
+                signupBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+                loadingOverlay.style.display = 'flex';
+                
+                try {
+                    const response = await fetch('/book-recycler/php/api/auth.php?action=signup', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData),
+                        credentials: 'include'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Show success notification with generated User ID
+                        showNotification(`Account created successfully! Your User ID: ${data.user_id}`, 'success');
+                        
+                        // Update button to show success
+                        signupBtn.innerHTML = '<i class="fas fa-check"></i> Account Created!';
+                        
+                        // Store user ID info for reference (optional)
+                        localStorage.setItem('temp_user_id', data.user_id);
+                        
+                        // Redirect to login page after delay
+                        setTimeout(() => {
+                            window.location.href = '/book-recycler/pages/login.html';
+                        }, 2500);
+                    } else {
+                        showNotification(data.message || 'Signup failed. Please try again.', 'error');
+                        signupBtn.disabled = false;
+                        signupBtn.innerHTML = '<i class="fas fa-user-plus"></i> Sign Up';
+                        loadingOverlay.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    showNotification('Network error. Please check your connection and try again.', 'error');
+                    signupBtn.disabled = false;
+                    signupBtn.innerHTML = '<i class="fas fa-user-plus"></i> Sign Up';
+                    loadingOverlay.style.display = 'none';
+                }
+            });
+
+            // Show notification function
+            function showNotification(message, type) {
+                // Remove existing notifications
+                const existingNotifications = document.querySelectorAll('.custom-notification');
+                existingNotifications.forEach(notif => notif.remove());
+                
+                const notification = document.createElement('div');
+                notification.className = 'custom-notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 1rem 1.5rem;
+                    background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+                    color: white;
+                    border-radius: 12px;
+                    z-index: 10002;
+                    animation: slideInRight 0.3s ease;
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-weight: 500;
+                    max-width: 350px;
+                `;
+                
+                const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+                notification.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 4000);
+            }
+
+            // Add keyboard support (Enter key)
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach((input, index) => {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const nextInput = inputs[index + 1];
+                        if (nextInput) {
+                            nextInput.focus();
+                        } else {
+                            signupForm.dispatchEvent(new Event('submit'));
+                        }
+                    }
+                });
+            });
+
+            // Add floating label effect
+            const allInputs = document.querySelectorAll('.input-wrapper input');
+            allInputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.style.transform = 'scale(1.02)';
+                });
+                input.addEventListener('blur', () => {
+                    input.parentElement.style.transform = 'scale(1)';
+                });
+            });
+
+            // Add animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes fadeOut {
+                    from {
+                        opacity: 1;
+                    }
+                    to {
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

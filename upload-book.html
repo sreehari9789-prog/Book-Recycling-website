@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell a Book - Book Recycler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/book-recycler/assets/css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f1e, #1a1a2e);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 15, 30, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 5%;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+
+        .upload-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 100px 2rem 2rem;
+        }
+
+        .upload-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .upload-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Image Upload Area */
+        .image-upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .image-upload-area:hover {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .image-upload-area.drag-over {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        .image-preview {
+            margin-top: 1rem;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 15px;
+            object-fit: cover;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .remove-image:hover {
+            transform: scale(1.1);
+        }
+
+        .ai-suggestion {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 3px solid #ff6b6b;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .btn-upload {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            border: none;
+            border-radius: 15px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-upload:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255,107,107,0.3);
+        }
+
+        .btn-upload:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* File info */
+        .file-info {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Required field indicator */
+        .required {
+            color: #ff6b6b;
+        }
+
+        @media (max-width: 768px) {
+            .upload-container {
+                padding: 80px 1rem 1rem;
+            }
+            .upload-card {
+                padding: 1.5rem;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/book-recycler/pages/index.html" class="logo">
+                <i class="fas fa-book-open"></i> BookRecycler
+            </a>
+            <ul class="nav-links">
+                <li><a href="/book-recycler/pages/index.html">Home</a></li>
+                <li><a href="/book-recycler/pages/book-listing.html">Explore</a></li>
+                <li><a href="/book-recycler/pages/academic-books.html">Academic</a></li>
+                <li><a href="/book-recycler/pages/upload-book.html" style="color: #ff6b6b;">Sell</a></li>
+                <li><a href="/book-recycler/pages/dashboard.html">Dashboard</a></li>
+            </ul>
+            <div class="auth-buttons" id="authButtons">
+                <a href="/book-recycler/pages/login.html" style="color: #fff; text-decoration: none;">Login</a>
+                <a href="/book-recycler/pages/signup.html" style="margin-left: 1rem; color: #ff6b6b; text-decoration: none;">Signup</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="upload-container">
+        <div class="upload-card">
+            <h2 style="margin-bottom: 0.5rem;"><i class="fas fa-cloud-upload-alt"></i> Sell Your Book</h2>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 2rem;">List your book and reach thousands of readers</p>
+
+            <div id="ai-suggestion" class="ai-suggestion" style="display: none;">
+                <i class="fas fa-robot"></i> <strong>AI Suggestion:</strong>
+                <span id="ai-text"></span>
+            </div>
+
+            <form id="upload-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label><i class="fas fa-book"></i> Book Title <span class="required">*</span></label>
+                    <input type="text" name="title" id="title" class="form-control" required placeholder="Enter book title">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Author <span class="required">*</span></label>
+                    <input type="text" name="author" id="author" class="form-control" required placeholder="Author name">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-barcode"></i> ISBN (Optional)</label>
+                    <input type="text" name="isbn" class="form-control" placeholder="ISBN number (10 or 13 digits)">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Category <span class="required">*</span></label>
+                    <select name="category_id" id="category_id" class="form-control" required>
+                        <option value="">Select Category</option>
+                        <option value="1">Computer Science</option>
+                        <option value="2">Mathematics</option>
+                        <option value="3">Physics</option>
+                        <option value="4">Chemistry</option>
+                        <option value="5">Biology</option>
+                        <option value="6">Engineering</option>
+                        <option value="7">Fiction</option>
+                        <option value="8">Non-Fiction</option>
+                        <option value="9">Science Fiction</option>
+                        <option value="10">Biography</option>
+                        <option value="11">History</option>
+                        <option value="12">Economics</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Description <span class="required">*</span></label>
+                    <textarea name="description" id="description" class="form-control" required placeholder="Describe your book... (min 20 characters)"></textarea>
+                    <div id="descCounter" style="font-size: 0.7rem; color: rgba(255,255,255,0.5); margin-top: 0.25rem;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-dollar-sign"></i> Price ($) <span class="required">*</span></label>
+                    <input type="number" name="price" step="0.01" class="form-control" required placeholder="0.00" min="0.01">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-star"></i> Condition <span class="required">*</span></label>
+                    <select name="condition" class="form-control" required>
+                        <option value="new">✨ New - Never read, perfect condition</option>
+                        <option value="like-new">📖 Like New - Slight wear, like new</option>
+                        <option value="good">👍 Good - Some wear, fully readable</option>
+                        <option value="fair">📚 Fair - Visible wear, usable</option>
+                        <option value="poor">⚠️ Poor - Heavy wear, still readable</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> Book Cover Image</label>
+                    <div class="image-upload-area" id="imageUploadArea">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <p>Click or drag & drop to upload book cover</p>
+                        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.5);">Supported formats: JPG, PNG, GIF (Max 5MB)</p>
+                        <input type="file" name="book_image" id="book_image" accept="image/*" style="display: none;">
+                    </div>
+                    <div id="image-preview" class="image-preview"></div>
+                    <div class="file-info" id="fileInfo"></div>
+                </div>
+
+                <button type="submit" class="btn-upload" id="submitBtn">
+                    <i class="fas fa-cloud-upload-alt"></i> List Book for Sale
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p style="color: white;">Uploading your book...</p>
+        <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">Please wait</p>
+    </div>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Check authentication
+            const authToken = localStorage.getItem('auth_token');
+            const authButtons = document.getElementById('authButtons');
+            
+            if (authToken) {
+                // User is logged in
+                const userName = localStorage.getItem('user_name') || 'User';
+                authButtons.innerHTML = `
+                    <span style="color: #ff6b6b; margin-right: 1rem;">Welcome, ${userName}</span>
+                    <button onclick="logout()" style="background: rgba(255,107,107,0.2); border: none; padding: 0.5rem 1rem; border-radius: 10px; color: #ff6b6b; cursor: pointer;">Logout</button>
+                `;
+            } else {
+                // Redirect to login
+                showNotification('Please login to sell books', 'error');
+                setTimeout(() => {
+                    window.location.href = '/book-recycler/pages/login.html';
+                }, 1500);
+                return;
+            }
+
+            // GSAP Animation
+            gsap.from('.upload-card', {
+                duration: 0.8,
+                y: 50,
+                opacity: 0,
+                ease: 'power3.out'
+            });
+
+            // Image upload with drag & drop
+            const imageUploadArea = document.getElementById('imageUploadArea');
+            const imageInput = document.getElementById('book_image');
+            const imagePreview = document.getElementById('image-preview');
+            const fileInfo = document.getElementById('fileInfo');
+
+            imageUploadArea.addEventListener('click', () => {
+                imageInput.click();
+            });
+
+            // Drag & drop events
+            imageUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imageUploadArea.classList.add('drag-over');
+            });
+
+            imageUploadArea.addEventListener('dragleave', () => {
+                imageUploadArea.classList.remove('drag-over');
+            });
+
+            imageUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imageUploadArea.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    handleImageFile(file);
+                } else {
+                    showNotification('Please upload a valid image file', 'error');
+                }
+            });
+
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    handleImageFile(file);
+                }
+            });
+
+            function handleImageFile(file) {
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('Image size should be less than 5MB', 'error');
+                    return;
+                }
+                
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+                if (!validTypes.includes(file.type)) {
+                    showNotification('Please upload JPG, PNG, GIF, or WEBP image', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.innerHTML = `
+                        <div style="position: relative; display: inline-block;">
+                            <img src="${e.target.result}" alt="Preview">
+                            <button type="button" class="remove-image" onclick="removeImage()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    fileInfo.innerHTML = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Remove image function
+            window.removeImage = function() {
+                imagePreview.innerHTML = '';
+                fileInfo.innerHTML = '';
+                imageInput.value = '';
+            };
+
+            // Description character counter
+            const description = document.getElementById('description');
+            const descCounter = document.getElementById('descCounter');
+            
+            description.addEventListener('input', () => {
+                const length = description.value.length;
+                descCounter.textContent = `${length} characters (minimum 20)`;
+                if (length < 20 && length > 0) {
+                    descCounter.style.color = '#e74c3c';
+                } else if (length >= 20) {
+                    descCounter.style.color = '#27ae60';
+                } else {
+                    descCounter.style.color = 'rgba(255,255,255,0.5)';
+                }
+            });
+
+            // AI Suggestion with debounce
+            let aiDebounceTimer;
+            const titleInput = document.getElementById('title');
+            
+            async function getAISuggestion() {
+                const title = titleInput.value;
+                const descriptionText = description.value;
+                
+                if (!title || title.length < 3) return;
+                
+                try {
+                    const response = await fetch('/book-recycler/php/api/ai-suggest.php?action=suggest-category', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title: title, description: descriptionText })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success && data.suggestion && data.suggestion.confidence > 0.5) {
+                        const aiDiv = document.getElementById('ai-suggestion');
+                        const aiText = document.getElementById('ai-text');
+                        aiText.innerHTML = `🤖 We suggest category: <strong>${data.suggestion.category}</strong> (${Math.round(data.suggestion.confidence * 100)}% confidence).<br>Suggested tags: ${data.suggestion.suggested_tags.join(', ')}`;
+                        aiDiv.style.display = 'block';
+                        
+                        // Auto-select category if confidence is high
+                        if (data.suggestion.confidence > 0.7 && data.suggestion.category_id) {
+                            const categorySelect = document.getElementById('category_id');
+                            if (categorySelect && !categorySelect.value) {
+                                categorySelect.value = data.suggestion.category_id;
+                                showNotification(`AI auto-selected category: ${data.suggestion.category}`, 'success');
+                            }
+                        }
+                        
+                        gsap.from(aiDiv, {
+                            duration: 0.5,
+                            x: -20,
+                            opacity: 0
+                        });
+                    }
+                } catch (error) {
+                    console.error('AI suggestion failed:', error);
+                }
+            }
+            
+            titleInput.addEventListener('input', () => {
+                clearTimeout(aiDebounceTimer);
+                aiDebounceTimer = setTimeout(getAISuggestion, 1000);
+            });
+            
+            description.addEventListener('input', () => {
+                clearTimeout(aiDebounceTimer);
+                aiDebounceTimer = setTimeout(getAISuggestion, 1000);
+            });
+
+            // Form validation
+            function validateForm() {
+                const title = titleInput.value.trim();
+                const author = document.getElementById('author').value.trim();
+                const category = document.getElementById('category_id').value;
+                const price = document.querySelector('input[name="price"]').value;
+                const descriptionText = description.value.trim();
+                
+                if (title.length < 2) {
+                    showNotification('Please enter a valid book title', 'error');
+                    return false;
+                }
+                
+                if (author.length < 2) {
+                    showNotification('Please enter the author name', 'error');
+                    return false;
+                }
+                
+                if (!category) {
+                    showNotification('Please select a category', 'error');
+                    return false;
+                }
+                
+                if (descriptionText.length < 20) {
+                    showNotification('Please provide a description (minimum 20 characters)', 'error');
+                    return false;
+                }
+                
+                if (!price || price <= 0) {
+                    showNotification('Please enter a valid price', 'error');
+                    return false;
+                }
+                
+                return true;
+            }
+
+            // Form submission
+            const uploadForm = document.getElementById('upload-form');
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            uploadForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+                loadingOverlay.style.display = 'flex';
+                
+                const formData = new FormData(uploadForm);
+                
+                try {
+                    const response = await fetch('/book-recycler/php/api/books.php?action=upload', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showNotification('✅ Book listed successfully!', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/book-recycler/pages/dashboard.html';
+                        }, 2000);
+                    } else {
+                        showNotification(data.message || 'Upload failed. Please try again.', 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> List Book for Sale';
+                        loadingOverlay.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    showNotification('Network error. Please check your connection.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> List Book for Sale';
+                    loadingOverlay.style.display = 'none';
+                }
+            });
+
+            // Show notification function
+            function showNotification(message, type) {
+                const existingNotifications = document.querySelectorAll('.custom-notification');
+                existingNotifications.forEach(notif => notif.remove());
+                
+                const notification = document.createElement('div');
+                notification.className = 'custom-notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    padding: 1rem 1.5rem;
+                    background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
+                    color: white;
+                    border-radius: 12px;
+                    z-index: 10002;
+                    animation: slideIn 0.3s ease;
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    max-width: 350px;
+                `;
+                
+                const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+                notification.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 4000);
+            }
+        });
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_name');
+            localStorage.removeItem('user_email');
+            localStorage.removeItem('user_phone');
+            window.location.href = '/book-recycler/pages/index.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Books - Book Recycler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f1e;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Premium Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 15, 30, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 5%;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+
+        /* Hero Search Section */
+        .search-hero {
+            background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,142,83,0.1));
+            padding: 120px 5% 60px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .search-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-hero p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 2rem;
+        }
+
+        .search-bar-premium {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 60px;
+            padding: 0.5rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .search-input-premium {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 1rem 1.5rem;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-input-premium::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .search-btn-premium {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 2rem;
+        }
+
+        /* Filter Sidebar */
+        .filter-sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            position: sticky;
+            top: 100px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .filter-sidebar:hover {
+            border-color: rgba(255,107,107,0.3);
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .apply-filters-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .apply-filters-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+        }
+
+        .reset-filters-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #fff;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-filters-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Results Header */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .results-count {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .sort-select {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Book Grid */
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .book-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .book-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .book-card:hover::before {
+            left: 100%;
+        }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+            border-color: #ff6b6b;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .book-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .book-card:hover .book-image {
+            transform: scale(1.05);
+        }
+
+        .book-info {
+            padding: 1.5rem;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .book-author {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-rating {
+            color: #ffa502;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .book-price {
+            color: #ff6b6b;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .book-seller {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .book-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+        }
+
+        .page-btn {
+            padding: 0.8rem 1.2rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            background: rgba(255,107,107,0.3);
+            border-color: #ff6b6b;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            border-color: transparent;
+        }
+
+        /* Loading State */
+        .loader {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 4rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+        }
+
+        .no-results i {
+            font-size: 4rem;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 1rem;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .main-container {
+                padding: 0 1rem 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .search-hero h1 {
+                font-size: 1.8rem;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/book-recycler/pages/index.html" class="logo">
+                <i class="fas fa-book-open"></i> BookRecycler
+            </a>
+            <ul class="nav-links">
+                <li><a href="/book-recycler/pages/index.html">Home</a></li>
+                <li><a href="/book-recycler/pages/book-listing.html" class="active">Explore</a></li>
+                <li><a href="/book-recycler/pages/academic-books.html">Academic</a></li>
+                <li><a href="/book-recycler/pages/upload-book.html">Sell</a></li>
+                <li><a href="/book-recycler/pages/dashboard.html">Dashboard</a></li>
+            </ul>
+            <div id="authButtons">
+                <a href="/book-recycler/pages/login.html" style="color: #fff; text-decoration: none;">Login</a>
+                <a href="/book-recycler/pages/signup.html" style="margin-left: 1rem; color: #ff6b6b; text-decoration: none;">Signup</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Hero Section -->
+    <section class="search-hero">
+        <h1>Discover Your Next Favorite Book</h1>
+        <p>Browse through thousands of books from sellers around the world</p>
+        <div class="search-bar-premium">
+            <input type="text" id="hero-search" class="search-input-premium" placeholder="Search by title, author, or ISBN...">
+            <button class="search-btn-premium" onclick="performHeroSearch()">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+    </section>
+
+    <div class="main-container">
+        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem;">
+            <!-- Filters Sidebar -->
+            <aside>
+                <div class="filter-sidebar">
+                    <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-filter"></i> Filters</h3>
+                    
+                    <div class="filter-group">
+                        <label><i class="fas fa-tag"></i> Category</label>
+                        <select id="category-filter" class="filter-select">
+                            <option value="">All Categories</option>
+                            <option value="1">💻 Computer Science</option>
+                            <option value="2">📐 Mathematics</option>
+                            <option value="3">⚛️ Physics</option>
+                            <option value="4">🧪 Chemistry</option>
+                            <option value="5">🧬 Biology</option>
+                            <option value="6">🔧 Engineering</option>
+                            <option value="7">📖 Fiction</option>
+                            <option value="8">📚 Non-Fiction</option>
+                            <option value="9">🚀 Science Fiction</option>
+                            <option value="10">👤 Biography</option>
+                            <option value="11">🏛️ History</option>
+                            <option value="12">📊 Economics</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label><i class="fas fa-dollar-sign"></i> Price Range</label>
+                        <input type="number" id="min-price" class="filter-input" placeholder="Min Price" style="margin-bottom: 0.5rem;">
+                        <input type="number" id="max-price" class="filter-input" placeholder="Max Price">
+                    </div>
+
+                    <div class="filter-group">
+                        <label><i class="fas fa-star"></i> Condition</label>
+                        <select id="condition-filter" class="filter-select">
+                            <option value="">Any Condition</option>
+                            <option value="new">✨ New</option>
+                            <option value="like-new">📖 Like New</option>
+                            <option value="good">👍 Good</option>
+                            <option value="fair">📚 Fair</option>
+                        </select>
+                    </div>
+
+                    <button class="apply-filters-btn" onclick="loadBooks(1)">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                    <button class="reset-filters-btn" onclick="resetFilters()">
+                        <i class="fas fa-undo"></i> Reset All
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Books Grid Main Content -->
+            <main>
+                <div class="results-header">
+                    <div class="results-count" id="resultsCount">
+                        <i class="fas fa-book"></i> Loading books...
+                    </div>
+                    <select id="sort-by" class="sort-select" onchange="loadBooks(1)">
+                        <option value="newest">🕐 Newest First</option>
+                        <option value="price-low">💰 Price: Low to High</option>
+                        <option value="price-high">💰 Price: High to Low</option>
+                        <option value="popular">🔥 Most Popular</option>
+                        <option value="rating">⭐ Highest Rated</option>
+                    </select>
+                </div>
+
+                <div id="books-container" class="book-grid">
+                    <div class="loader">
+                        <div class="spinner"></div>
+                        <p>Loading amazing books...</p>
+                    </div>
+                </div>
+
+                <div id="pagination" class="pagination"></div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentUser = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadBooks(1);
+            setupEventListeners();
+            
+            // Check URL params for search
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('search')) {
+                const searchTerm = urlParams.get('search');
+                document.getElementById('hero-search').value = searchTerm;
+                document.getElementById('search-input').value = searchTerm;
+                loadBooks(1);
+            }
+        });
+
+        // Check authentication
+        async function checkAuth() {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                try {
+                    const response = await fetch('/book-recycler/php/api/auth.php?action=user-info', {
+                        credentials: 'include'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        currentUser = data.user;
+                        document.getElementById('authButtons').innerHTML = `
+                            <span style="color: #ff6b6b; margin-right: 1rem;">${data.user.full_name}</span>
+                            <button onclick="logout()" style="background: rgba(255,107,107,0.2); border: none; padding: 0.5rem 1rem; border-radius: 10px; color: #ff6b6b; cursor: pointer;">Logout</button>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Auth check failed:', error);
+                }
+            }
+        }
+
+        // Load books with filters
+        async function loadBooks(page = 1) {
+            currentPage = page;
+            
+            const search = document.getElementById('hero-search').value;
+            const category = document.getElementById('category-filter').value;
+            const minPrice = document.getElementById('min-price').value;
+            const maxPrice = document.getElementById('max-price').value;
+            const condition = document.getElementById('condition-filter').value;
+            const sortBy = document.getElementById('sort-by').value;
+            
+            let url = `/book-recycler/php/api/books.php?page=${page}&limit=12`;
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+            if (category) url += `&category=${category}`;
+            if (minPrice) url += `&min_price=${minPrice}`;
+            if (maxPrice) url += `&max_price=${maxPrice}`;
+            if (condition) url += `&condition=${condition}`;
+            
+            // Show loading state
+            document.getElementById('books-container').innerHTML = `
+                <div class="loader">
+                    <div class="spinner"></div>
+                    <p>Loading books...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayBooks(data.books);
+                    document.getElementById('resultsCount').innerHTML = `<i class="fas fa-book"></i> Showing ${data.books.length} of ${data.total} books`;
+                    totalPages = data.total_pages;
+                    displayPagination();
+                    
+                    // GSAP animation for new books
+                    gsap.from('.book-card', {
+                        scrollTrigger: { trigger: '.book-grid', start: 'top 80%' },
+                        opacity: 0,
+                        y: 50,
+                        duration: 0.6,
+                        stagger: 0.05,
+                        ease: 'power2.out'
+                    });
+                } else {
+                    document.getElementById('books-container').innerHTML = `
+                        <div class="no-results" style="grid-column: 1/-1;">
+                            <i class="fas fa-book-open"></i>
+                            <h3>No books found</h3>
+                            <p>Try adjusting your filters or search term</p>
+                            <button class="apply-filters-btn" onclick="resetFilters()" style="margin-top: 1rem; width: auto; padding: 0.8rem 2rem;">Clear Filters</button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Failed to load books:', error);
+                document.getElementById('books-container').innerHTML = `
+                    <div class="no-results" style="grid-column: 1/-1;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error loading books</h3>
+                        <p>Please check your connection and try again</p>
+                        <button class="apply-filters-btn" onclick="loadBooks(1)" style="margin-top: 1rem; width: auto; padding: 0.8rem 2rem;">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Display books in grid
+        function displayBooks(books) {
+            const container = document.getElementById('books-container');
+            if (!books || books.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results" style="grid-column: 1/-1;">
+                        <i class="fas fa-search"></i>
+                        <h3>No books match your criteria</h3>
+                        <p>Try different filters or check back later</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = books.map(book => `
+                <div class="book-card" onclick="viewBookDetail(${book.book_id})">
+                    <div class="book-badge">${book.condition || 'Good'}</div>
+                    <img src="/book-recycler/php/uploads/${book.image_path || 'default-book.jpg'}" 
+                         class="book-image" 
+                         alt="${escapeHtml(book.title)}"
+                         onerror="this.src='/book-recycler/assets/images/default-book.jpg'">
+                    <div class="book-info">
+                        <h3 class="book-title">${escapeHtml(book.title)}</h3>
+                        <p class="book-author">by ${escapeHtml(book.author)}</p>
+                        <div class="book-rating">
+                            ${generateStarRating(book.avg_rating)}
+                            <span style="color: rgba(255,255,255,0.5);">(${book.review_count || 0})</span>
+                        </div>
+                        <p class="book-price">$${parseFloat(book.price).toFixed(2)}</p>
+                        <p class="book-seller">
+                            <i class="fas fa-user"></i> ${escapeHtml(book.seller_name)}
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Display pagination
+        function displayPagination() {
+            const paginationDiv = document.getElementById('pagination');
+            if (totalPages <= 1) {
+                paginationDiv.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            // Previous button
+            if (currentPage > 1) {
+                html += `<button class="page-btn" onclick="loadBooks(${currentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
+            }
+            
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, startPage + 4);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="loadBooks(${i})">${i}</button>`;
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                html += `<button class="page-btn" onclick="loadBooks(${currentPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
+            }
+            
+            paginationDiv.innerHTML = html;
+        }
+
+        // Hero search
+        function performHeroSearch() {
+            loadBooks(1);
+        }
+
+        // Reset all filters
+        function resetFilters() {
+            document.getElementById('hero-search').value = '';
+            document.getElementById('category-filter').value = '';
+            document.getElementById('min-price').value = '';
+            document.getElementById('max-price').value = '';
+            document.getElementById('condition-filter').value = '';
+            document.getElementById('sort-by').value = 'newest';
+            loadBooks(1);
+        }
+
+        // Generate star rating
+        function generateStarRating(rating) {
+            const fullStars = Math.floor(rating || 0);
+            let stars = '';
+            for (let i = 0; i < fullStars; i++) stars += '<i class="fas fa-star"></i>';
+            for (let i = stars.length / 3; i < 5; i++) stars += '<i class="far fa-star"></i>';
+            return stars;
+        }
+
+        // View book detail
+        function viewBookDetail(bookId) {
+            window.location.href = `/book-recycler/pages/book-detail.html?id=${bookId}`;
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Debounced search for hero search
+            let debounceTimer;
+            const heroSearch = document.getElementById('hero-search');
+            if (heroSearch) {
+                heroSearch.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => loadBooks(1), 500);
+                });
+                
+                heroSearch.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        loadBooks(1);
+                    }
+                });
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_name');
+            localStorage.removeItem('user_email');
+            window.location.href = '/book-recycler/pages/index.html';
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.background = type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db';
+            notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // Expose functions globally
+        window.loadBooks = loadBooks;
+        window.viewBookDetail = viewBookDetail;
+        window.resetFilters = resetFilters;
+        window.performHeroSearch = performHeroSearch;
+        window.logout = logout;
+    </script>
+</body>
+</html>

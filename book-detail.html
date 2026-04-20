@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details - Book Recycler</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f1e;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Premium Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(15, 15, 30, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 5%;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+
+        /* Book Detail Container */
+        .book-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 2rem 2rem;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            margin-bottom: 2rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .breadcrumb a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #ff6b6b;
+        }
+
+        /* Book Detail Grid */
+        .book-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .book-detail-grid:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,107,107,0.3);
+        }
+
+        /* Book Cover */
+        .book-cover-large {
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .book-cover-large img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.5s ease;
+        }
+
+        .book-cover-large:hover img {
+            transform: scale(1.05);
+        }
+
+        .book-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        /* Book Info */
+        .book-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, #ff8e53);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .book-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            background: rgba(255,255,255,0.1);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .rating-stars {
+            color: #ffa502;
+            font-size: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .condition-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+
+        .condition-new { background: rgba(39,174,96,0.2); color: #27ae60; }
+        .condition-like-new { background: rgba(52,152,219,0.2); color: #3498db; }
+        .condition-good { background: rgba(243,156,18,0.2); color: #f39c12; }
+        .condition-fair { background: rgba(230,126,34,0.2); color: #e67e22; }
+        .condition-poor { background: rgba(231,76,60,0.2); color: #e74c3c; }
+
+        .description {
+            line-height: 1.8;
+            color: rgba(255,255,255,0.8);
+            margin: 1.5rem 0;
+        }
+
+        /* Seller Card */
+        .seller-card {
+            background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,142,83,0.1));
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255,107,107,0.2);
+        }
+
+        .seller-card h3 {
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+
+        .seller-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem;
+            border-radius: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .seller-info-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .seller-info-item i {
+            width: 25px;
+            color: #ff6b6b;
+        }
+
+        .seller-rating {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 15px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255,107,107,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Reviews Section */
+        .reviews-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .average-rating {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+        }
+
+        .average-rating .big-rating {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffa502;
+        }
+
+        .review-card {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.2rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateX(5px);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: #ff6b6b;
+        }
+
+        .review-rating {
+            color: #ffa502;
+        }
+
+        .review-comment {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-date {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+        }
+
+        /* Write Review Form */
+        .write-review {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .rating-input {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .rating-star {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .rating-star:hover,
+        .rating-star.selected {
+            color: #ffa502;
+            transform: scale(1.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            color: #fff;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* Loading & Notification */
+        .loader {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Similar Books */
+        .similar-books {
+            margin-top: 2rem;
+        }
+
+        .similar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .similar-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .similar-card:hover {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+
+        .similar-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .similar-card .info {
+            padding: 0.8rem;
+        }
+
+        .similar-card .title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .similar-card .price {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .book-detail-grid {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+            .book-title {
+                font-size: 1.8rem;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/book-recycler/pages/index.html" class="logo">
+                <i class="fas fa-book-open"></i> BookRecycler
+            </a>
+            <ul class="nav-links">
+                <li><a href="/book-recycler/pages/index.html">Home</a></li>
+                <li><a href="/book-recycler/pages/book-listing.html">Explore</a></li>
+                <li><a href="/book-recycler/pages/academic-books.html">Academic</a></li>
+                <li><a href="/book-recycler/pages/upload-book.html">Sell</a></li>
+                <li><a href="/book-recycler/pages/dashboard.html">Dashboard</a></li>
+            </ul>
+            <div id="authButtons">
+                <a href="/book-recycler/pages/login.html" style="color: #fff; text-decoration: none;">Login</a>
+                <a href="/book-recycler/pages/signup.html" style="margin-left: 1rem; color: #ff6b6b; text-decoration: none;">Signup</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="book-detail" class="book-detail-container">
+        <div class="loader">
+            <div class="spinner"></div>
+            <p>Loading book details...</p>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookId = urlParams.get('id');
+        let selectedRating = 0;
+        let currentUser = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            if (!bookId) {
+                window.location.href = '/book-recycler/pages/book-listing.html';
+                return;
+            }
+            loadBookDetail();
+        });
+
+        // Check authentication
+        async function checkAuth() {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                try {
+                    const response = await fetch('/book-recycler/php/api/auth.php?action=user-info', {
+                        credentials: 'include'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        currentUser = data.user;
+                        document.getElementById('authButtons').innerHTML = `
+                            <span style="color: #ff6b6b; margin-right: 1rem;">${data.user.full_name}</span>
+                            <button onclick="logout()" style="background: rgba(255,107,107,0.2); border: none; padding: 0.5rem 1rem; border-radius: 10px; color: #ff6b6b; cursor: pointer;">Logout</button>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Auth check failed:', error);
+                }
+            }
+        }
+
+        // Load book detail
+        async function loadBookDetail() {
+            try {
+                const response = await fetch(`/book-recycler/php/api/books.php?action=detail&book_id=${bookId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayBookDetail(data.book);
+                    displayReviews(data.reviews);
+                    loadSimilarBooks(data.book.category_id, bookId);
+                    
+                    // GSAP animations
+                    gsap.from('.book-detail-grid', {
+                        duration: 0.8,
+                        y: 50,
+                        opacity: 0,
+                        ease: 'power3.out'
+                    });
+                } else {
+                    document.getElementById('book-detail').innerHTML = `
+                        <div style="text-align: center; padding: 100px;">
+                            <i class="fas fa-book-open" style="font-size: 4rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i>
+                            <h2>Book not found</h2>
+                            <p>The book you're looking for doesn't exist or has been removed.</p>
+                            <button class="btn-primary" onclick="location.href='/book-recycler/pages/book-listing.html'" style="margin-top: 1rem;">Browse Books</button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Failed to load book detail:', error);
+                document.getElementById('book-detail').innerHTML = `
+                    <div style="text-align: center; padding: 100px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i>
+                        <h2>Error loading book</h2>
+                        <p>Please check your connection and try again.</p>
+                        <button class="btn-primary" onclick="location.reload()" style="margin-top: 1rem;">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Display book detail
+        function displayBookDetail(book) {
+            const container = document.getElementById('book-detail');
+            
+            // Get condition class
+            const conditionClass = getConditionClass(book.condition);
+            
+            container.innerHTML = `
+                <div class="breadcrumb">
+                    <a href="/book-recycler/pages/index.html">Home</a> / 
+                    <a href="/book-recycler/pages/book-listing.html">Books</a> / 
+                    <span style="color: #ff6b6b;">${escapeHtml(book.title)}</span>
+                </div>
+
+                <div class="book-detail-grid">
+                    <div class="book-cover-large">
+                        <div class="book-badge">${book.condition || 'Good'}</div>
+                        <img src="/book-recycler/php/uploads/${book.image_path || 'default-book.jpg'}" 
+                             alt="${escapeHtml(book.title)}"
+                             onerror="this.src='/book-recycler/assets/images/default-book.jpg'">
+                    </div>
+                    
+                    <div>
+                        <h1 class="book-title">${escapeHtml(book.title)}</h1>
+                        <p style="color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; font-size: 1.1rem;">by ${escapeHtml(book.author)}</p>
+                        
+                        <div class="book-meta">
+                            <span class="meta-item"><i class="fas fa-tag"></i> ${escapeHtml(book.category_name)}</span>
+                            <span class="meta-item"><i class="fas fa-eye"></i> ${book.views_count || 0} views</span>
+                            <span class="meta-item"><i class="fas fa-calendar"></i> Listed: ${new Date(book.created_at).toLocaleDateString()}</span>
+                        </div>
+                        
+                        <div class="rating-stars">
+                            ${generateStarRating(book.avg_rating)}
+                            <span style="font-size: 1rem; margin-left: 0.5rem;">(${book.review_count || 0} reviews)</span>
+                        </div>
+                        
+                        <div class="price">$${parseFloat(book.price).toFixed(2)}</div>
+                        
+                        <span class="condition-badge ${conditionClass}">
+                            <i class="fas ${getConditionIcon(book.condition)}"></i> ${book.condition}
+                        </span>
+                        
+                        <div class="description">
+                            <h3>Description</h3>
+                            <p>${escapeHtml(book.description)}</p>
+                        </div>
+                        
+                        <!-- Seller Information Card -->
+                        <div class="seller-card">
+                            <h3><i class="fas fa-store"></i> Seller Information</h3>
+                            <div class="seller-info-item">
+                                <i class="fas fa-user"></i>
+                                <span><strong>${escapeHtml(book.seller_name)}</strong></span>
+                            </div>
+                            <div class="seller-info-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>${escapeHtml(book.seller_email)}</span>
+                            </div>
+                            ${book.seller_phone ? `
+                            <div class="seller-info-item">
+                                <i class="fas fa-phone"></i>
+                                <span>${escapeHtml(book.seller_phone)}</span>
+                            </div>
+                            ` : ''}
+                            ${book.seller_address ? `
+                            <div class="seller-info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>${escapeHtml(book.seller_address)}</span>
+                            </div>
+                            ` : ''}
+                            <div class="seller-rating">
+                                <small><i class="fas fa-star" style="color: #ffa502;"></i> Member since ${new Date(book.created_at).getFullYear()}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn-primary" onclick="contactSeller('${book.seller_email}')">
+                                <i class="fas fa-envelope"></i> Contact Seller
+                            </button>
+                            <button class="btn-primary" onclick="initiatePurchase(${book.book_id}, ${book.price})" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
+                                <i class="fas fa-shopping-cart"></i> Buy Now
+                            </button>
+                            <button class="btn-secondary" onclick="shareBook(${book.book_id})">
+                                <i class="fas fa-share-alt"></i> Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reviews Section -->
+                <div class="reviews-section">
+                    <div class="reviews-header">
+                        <h2><i class="fas fa-comments"></i> Customer Reviews</h2>
+                        <div class="average-rating">
+                            <div class="big-rating">${book.avg_rating ? book.avg_rating.toFixed(1) : '0'}</div>
+                            <div>${generateStarRating(book.avg_rating)}</div>
+                            <small>${book.review_count || 0} reviews</small>
+                        </div>
+                    </div>
+                    
+                    <div id="reviews-container"></div>
+                    
+                    ${currentUser ? `
+                    <div class="write-review">
+                        <h3>Write a Review</h3>
+                        <div class="rating-input" id="rating-input">
+                            ${[1,2,3,4,5].map(i => `<i class="fas fa-star rating-star" data-rating="${i}"></i>`).join('')}
+                        </div>
+                        <textarea id="review-comment" rows="4" placeholder="Share your thoughts about this book..."></textarea>
+                        <button class="btn-primary" onclick="submitReview(${book.book_id})" style="margin-top: 1rem;">
+                            <i class="fas fa-paper-plane"></i> Submit Review
+                        </button>
+                    </div>
+                    ` : `
+                    <div style="text-align: center; padding: 2rem; background: rgba(255,255,255,0.03); border-radius: 15px;">
+                        <i class="fas fa-lock" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p><a href="/book-recycler/pages/login.html" style="color: #ff6b6b;">Login</a> to write a review</p>
+                    </div>
+                    `}
+                </div>
+                
+                <!-- Similar Books -->
+                <div class="similar-books">
+                    <h2><i class="fas fa-book"></i> Similar Books You Might Like</h2>
+                    <div id="similar-books-container" class="similar-grid">
+                        <div class="loader"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            `;
+            
+            setupRatingStars();
+        }
+
+        // Display reviews
+        function displayReviews(reviews) {
+            const container = document.getElementById('reviews-container');
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-comment-dots" style="font-size: 3rem; color: rgba(255,255,255,0.3); margin-bottom: 1rem;"></i><p>No reviews yet. Be the first to review this book!</p></div>';
+                return;
+            }
+            
+            container.innerHTML = reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-name">
+                            <i class="fas fa-user-circle"></i> ${escapeHtml(review.user_name)}
+                        </div>
+                        <div class="review-rating">${generateStarRating(review.rating)}</div>
+                    </div>
+                    <p class="review-comment">${escapeHtml(review.comment)}</p>
+                    <div class="review-date">
+                        <i class="fas fa-clock"></i> ${new Date(review.created_at).toLocaleDateString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load similar books
+        async function loadSimilarBooks(categoryId, currentBookId) {
+            try {
+                const response = await fetch(`/book-recycler/php/api/books.php?category=${categoryId}&limit=4`);
+                const data = await response.json();
+                
+                if (data.success && data.books.length > 0) {
+                    const similarBooks = data.books.filter(book => book.book_id != currentBookId).slice(0, 4);
+                    const container = document.getElementById('similar-books-container');
+                    
+                    if (similarBooks.length === 0) {
+                        container.innerHTML = '<p style="text-align: center;">No similar books found</p>';
+                        return;
+                    }
+                    
+                    container.innerHTML = similarBooks.map(book => `
+                        <div class="similar-card" onclick="viewBookDetail(${book.book_id})">
+                            <img src="/book-recycler/php/uploads/${book.image_path || 'default-book.jpg'}" onerror="this.src='/book-recycler/assets/images/default-book.jpg'">
+                            <div class="info">
+                                <div class="title">${escapeHtml(book.title)}</div>
+                                <div class="price">$${parseFloat(book.price).toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load similar books:', error);
+            }
+        }
+
+        // Setup rating stars
+        function setupRatingStars() {
+            const stars = document.querySelectorAll('.rating-star');
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    selectedRating = parseInt(star.dataset.rating);
+                    stars.forEach(s => {
+                        const rating = parseInt(s.dataset.rating);
+                        if (rating <= selectedRating) {
+                            s.classList.add('selected');
+                        } else {
+                            s.classList.remove('selected');
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseenter', () => {
+                    const rating = parseInt(star.dataset.rating);
+                    stars.forEach(s => {
+                        const r = parseInt(s.dataset.rating);
+                        if (r <= rating) {
+                            s.style.color = '#ffa502';
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseleave', () => {
+                    stars.forEach(s => {
+                        const r = parseInt(s.dataset.rating);
+                        if (r <= selectedRating) {
+                            s.style.color = '#ffa502';
+                        } else {
+                            s.style.color = '#ddd';
+                        }
+                    });
+                });
+            });
+        }
+
+        // Submit review
+        async function submitReview(bookId) {
+            if (!currentUser) {
+                showNotification('Please login to submit a review', 'error');
+                setTimeout(() => {
+                    window.location.href = '/book-recycler/pages/login.html';
+                }, 1500);
+                return;
+            }
+            
+            if (selectedRating === 0) {
+                showNotification('Please select a rating', 'error');
+                return;
+            }
+            
+            const comment = document.getElementById('review-comment').value;
+            if (!comment.trim()) {
+                showNotification('Please write a comment', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/book-recycler/php/api/reviews.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ book_id: bookId, rating: selectedRating, comment }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('Review submitted successfully!', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to submit review', 'error');
+            }
+        }
+
+        // Helper functions
+        function getConditionClass(condition) {
+            const classes = {
+                'new': 'condition-new',
+                'like-new': 'condition-like-new',
+                'good': 'condition-good',
+                'fair': 'condition-fair',
+                'poor': 'condition-poor'
+            };
+            return classes[condition] || 'condition-good';
+        }
+
+        function getConditionIcon(condition) {
+            const icons = {
+                'new': 'fa-sparkles',
+                'like-new': 'fa-star',
+                'good': 'fa-thumbs-up',
+                'fair': 'fa-book',
+                'poor': 'fa-exclamation-triangle'
+            };
+            return icons[condition] || 'fa-book';
+        }
+
+        function generateStarRating(rating) {
+            const fullStars = Math.floor(rating || 0);
+            const hasHalfStar = (rating % 1) >= 0.5;
+            let stars = '';
+            for (let i = 0; i < fullStars; i++) stars += '<i class="fas fa-star"></i>';
+            if (hasHalfStar) stars += '<i class="fas fa-star-half-alt"></i>';
+            for (let i = stars.length / 3; i < 5; i++) stars += '<i class="far fa-star"></i>';
+            return stars;
+        }
+
+        function contactSeller(email) {
+            window.location.href = `mailto:${email}`;
+        }
+
+        function initiatePurchase(bookId, price) {
+            if (!currentUser) {
+                showNotification('Please login to purchase', 'error');
+                setTimeout(() => {
+                    window.location.href = '/book-recycler/pages/login.html';
+                }, 1500);
+                return;
+            }
+            showNotification(`Purchase initiated for $${price}. The seller will contact you soon.`, 'success');
+        }
+
+        function shareBook(bookId) {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url);
+            showNotification('Link copied to clipboard!', 'success');
+        }
+
+        function viewBookDetail(bookId) {
+            window.location.href = `/book-recycler/pages/book-detail.html?id=${bookId}`;
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.background = type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db';
+            notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_name');
+            localStorage.removeItem('user_email');
+            window.location.href = '/book-recycler/pages/index.html';
+        }
+
+        // Expose functions globally
+        window.submitReview = submitReview;
+        window.contactSeller = contactSeller;
+        window.initiatePurchase = initiatePurchase;
+        window.shareBook = shareBook;
+        window.viewBookDetail = viewBookDetail;
+        window.logout = logout;
+    </script>
+</body>
+</html>

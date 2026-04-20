@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recycler | Premium Book Marketplace - Buy, Sell & Exchange Books</title>
+    <meta name="description" content="Join 10,000+ readers in the sustainable book revolution. Buy, sell, and exchange books with fellow readers worldwide.">
+    <meta name="keywords" content="books, marketplace, sell books, buy books, exchange books, textbook, academic books">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/book-recycler/assets/css/style.css">
+    <link rel="stylesheet" href="/book-recycler/assets/css/dashboard.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f1e;
+            overflow-x: hidden;
+        }
+
+        /* Premium Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10000;
+            padding: 1.2rem 5%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(15, 15, 30, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar.scrolled {
+            padding: 0.8rem 5%;
+            background: rgba(15, 15, 30, 0.95);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53, #ff6b6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Hero Section with 3D Effect */
+        .hero {
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 20% 50%, rgba(255,107,107,0.1), rgba(15,15,30,1));
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, #ff8e53, #ff6b6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        /* 3D Book Container */
+        .book-3d-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .book-3d-item {
+            position: absolute;
+            width: 100px;
+            height: 140px;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        /* Premium Button */
+        .btn-premium {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255,107,107,0.4);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,107,107,0.6);
+        }
+
+        .btn-outline-premium {
+            background: transparent;
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .btn-outline-premium:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 5rem 5%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Book Cards */
+        .book-card-premium {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .book-card-premium:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255,107,107,0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .book-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .book-card-premium:hover .book-image {
+            transform: scale(1.05);
+        }
+
+        /* Category Cards */
+        .category-card-premium {
+            background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(255,142,83,0.2));
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .category-card-premium:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, rgba(255,107,107,0.3), rgba(255,142,83,0.3));
+            border-color: rgba(255,107,107,0.5);
+        }
+
+        /* Search Bar */
+        .search-premium {
+            max-width: 700px;
+            margin: -30px auto 0;
+            position: relative;
+            z-index: 20;
+            padding: 0 1rem;
+        }
+
+        .search-input-premium {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            border: none;
+            border-radius: 60px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .search-input-premium:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ff6b6b;
+        }
+
+        .search-input-premium::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 5rem 5%;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(255,142,83,0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .feature-icon i {
+            font-size: 2rem;
+            color: #ff6b6b;
+        }
+
+        /* Footer */
+        .footer {
+            background: #0a0a15;
+            padding: 3rem 5% 1rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+
+        .footer-section a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #ff6b6b;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: #ff6b6b;
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="/book-recycler/pages/index.html" class="logo">
+                <i class="fas fa-book-open"></i> BookRecycler
+            </a>
+            <ul class="nav-links">
+                <li><a href="/book-recycler/pages/index.html" class="active">Home</a></li>
+                <li><a href="/book-recycler/pages/book-listing.html">Explore</a></li>
+                <li><a href="/book-recycler/pages/academic-books.html">Academic</a></li>
+                <li><a href="/book-recycler/pages/upload-book.html">Sell</a></li>
+                <li><a href="/book-recycler/pages/dashboard.html">Dashboard</a></li>
+            </ul>
+            <div class="auth-buttons" id="authButtons">
+                <a href="/book-recycler/pages/login.html" class="btn-premium" style="padding: 0.7rem 1.5rem;">Login</a>
+                <a href="/book-recycler/pages/signup.html" style="margin-left: 1rem; color: #ff8e53; text-decoration: none; font-weight: 600;">Signup</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title" id="hero-title">Give Books a Second Life</h1>
+            <p class="hero-subtitle">Join 10,000+ readers in the sustainable book revolution</p>
+            <button class="btn-premium" onclick="location.href='/book-recycler/pages/book-listing.html'">
+                Start Exploring <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        <div class="book-3d-container" id="book3dContainer"></div>
+    </section>
+
+    <div class="search-premium">
+        <input type="text" id="search-input" class="search-input-premium" placeholder="🔍 Search for books by title, author, or ISBN...">
+    </div>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 3rem; background: linear-gradient(135deg, #fff, #ff8e53); -webkit-background-clip: text; background-clip: text; color: transparent;">Why Choose Book Recycler?</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h3>Sustainable Reading</h3>
+                    <p style="color: rgba(255,255,255,0.7);">Give books a second life and reduce waste</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <h3>Best Prices</h3>
+                    <p style="color: rgba(255,255,255,0.7);">Save up to 70% on textbooks and novels</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure Transactions</h3>
+                    <p style="color: rgba(255,255,255,0.7);">Safe and secure buying and selling</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3>Fast Delivery</h3>
+                    <p style="color: rgba(255,255,255,0.7);">Quick shipping across the country</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <div class="stat-card reveal">
+                    <i class="fas fa-book" style="font-size: 3rem; color: #ff6b6b;"></i>
+                    <div class="stat-number" data-target="10000">0</div>
+                    <p style="color: #fff;">Books Available</p>
+                </div>
+                <div class="stat-card reveal">
+                    <i class="fas fa-users" style="font-size: 3rem; color: #ff6b6b;"></i>
+                    <div class="stat-number" data-target="5000">0</div>
+                    <p style="color: #fff;">Happy Readers</p>
+                </div>
+                <div class="stat-card reveal">
+                    <i class="fas fa-star" style="font-size: 3rem; color: #ff6b6b;"></i>
+                    <div class="stat-number" data-target="48">4.8</div>
+                    <p style="color: #fff;">Average Rating</p>
+                </div>
+                <div class="stat-card reveal">
+                    <i class="fas fa-tree" style="font-size: 3rem; color: #ff6b6b;"></i>
+                    <div class="stat-number" data-target="50000">0</div>
+                    <p style="color: #fff;">Books Recycled</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 5rem 5%;">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #ff6b6b, #ff8e53); -webkit-background-clip: text; background-clip: text; color: transparent;">Trending Books</h2>
+            <p style="text-align: center; color: rgba(255,255,255,0.7); margin-bottom: 3rem;">Most popular books this week</p>
+            <div id="trending-books" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem;"></div>
+        </div>
+    </section>
+
+    <section style="padding: 5rem 5%; background: linear-gradient(135deg, #1a1a2e, #16213e);">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #fff;">Browse by Category</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                <div class="category-card-premium reveal" onclick="location.href='/book-recycler/pages/academic-books.html?category=cs'">
+                    <i class="fas fa-laptop-code" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Computer Science</h3>
+                </div>
+                <div class="category-card-premium reveal" onclick="location.href='/book-recycler/pages/academic-books.html?category=math'">
+                    <i class="fas fa-calculator" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Mathematics</h3>
+                </div>
+                <div class="category-card-premium reveal" onclick="location.href='/book-recycler/pages/academic-books.html?category=physics'">
+                    <i class="fas fa-atom" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Physics</h3>
+                </div>
+                <div class="category-card-premium reveal" onclick="location.href='/book-recycler/pages/academic-books.html?category=chemistry'">
+                    <i class="fas fa-flask" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Chemistry</h3>
+                </div>
+                <div class="category-card-premium reveal" onclick="location.href='/book-recycler/pages/academic-books.html?category=biology'">
+                    <i class="fas fa-dna" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Biology</h3>
+                </div>
+                <div class="category-card-premium reveal" onclick="location.href='/book-recycler/pages/book-listing.html?category=fiction'">
+                    <i class="fas fa-feather-alt" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Fiction</h3>
+                </div>
+                <div class="category-card-premium reveal" onclick="location.href='/book-recycler/pages/book-listing.html?category=history'">
+                    <i class="fas fa-landmark" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>History</h3>
+                </div>
+                <div class="category-card-premium reveal" onclick="location.href='/book-recycler/pages/book-listing.html?category=business'">
+                    <i class="fas fa-chart-line" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                    <h3>Business</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section style="padding: 5rem 5%; text-align: center; background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,142,83,0.1));">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem;">Ready to Start Your Journey?</h2>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 2rem;">Join thousands of readers who are already buying and selling books on Book Recycler</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-premium" onclick="location.href='/book-recycler/pages/signup.html'">
+                    <i class="fas fa-user-plus"></i> Sign Up Now
+                </button>
+                <button class="btn-premium btn-outline-premium" onclick="location.href='/book-recycler/pages/upload-book.html'">
+                    <i class="fas fa-book"></i> Sell Your Books
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-book-open"></i> Book Recycler</h3>
+                <p style="color: rgba(255,255,255,0.7);">Sustainable reading for a better tomorrow. Buy, sell, and exchange books with fellow readers worldwide.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="/book-recycler/pages/index.html">Home</a>
+                <a href="/book-recycler/pages/book-listing.html">Explore Books</a>
+                <a href="/book-recycler/pages/academic-books.html">Academic Books</a>
+                <a href="/book-recycler/pages/upload-book.html">Sell Books</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <a href="#">Help Center</a>
+                <a href="#">Contact Us</a>
+                <a href="#">Returns Policy</a>
+                <a href="#">Terms & Conditions</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-envelope"></i> support@bookrecycler.com</p>
+                <p><i class="fas fa-phone"></i> +1 234 567 8900</p>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Book Street, NY 10001</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Book Recycler. All rights reserved. | Sustainable reading for a better tomorrow</p>
+        </div>
+    </footer>
+
+    <!-- GSAP Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+    
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            checkAuth();
+            
+            // Initialize GSAP
+            gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+            // Navbar scroll effect
+            window.addEventListener('scroll', () => {
+                const navbar = document.getElementById('navbar');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Hero text animation
+            gsap.from('.hero-title', {
+                duration: 1.5,
+                y: 100,
+                opacity: 0,
+                ease: 'power3.out'
+            });
+
+            gsap.from('.hero-subtitle', {
+                duration: 1.5,
+                y: 50,
+                opacity: 0,
+                delay: 0.3,
+                ease: 'power3.out'
+            });
+
+            gsap.from('.btn-premium', {
+                duration: 1,
+                scale: 0,
+                opacity: 0,
+                delay: 0.6,
+                ease: 'back.out(1.7)'
+            });
+
+            // 3D Floating Books Animation
+            class Advanced3DBooks {
+                constructor() {
+                    this.container = document.getElementById('book3dContainer');
+                    if (!this.container) return;
+                    this.books = [];
+                    this.colors = ['#ff6b6b', '#ff8e53', '#ff4757', '#ffa502', '#ff6348', '#ff7f50'];
+                    this.init();
+                }
+
+                init() {
+                    for (let i = 0; i < 20; i++) {
+                        this.createBook(i);
+                    }
+                    this.animateBooks();
+                }
+
+                createBook(index) {
+                    const book = document.createElement('div');
+                    book.className = 'book-3d-item';
+                    
+                    const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    const rotY = Math.random() * 360;
+                    
+                    book.style.left = `${x}px`;
+                    book.style.top = `${y}px`;
+                    book.style.transform = `rotateY(${rotY}deg)`;
+                    
+                    book.innerHTML = `
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(135deg, ${color}, #c0392b); border-radius: 8px; transform: translateZ(20px); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                            <div style="position: absolute; bottom: 10px; left: 10px; color: white; font-size: 10px; font-weight: bold;">BOOK</div>
+                        </div>
+                        <div style="position: absolute; left: -10px; top: 0; width: 10px; height: 100%; background: #c0392b; border-radius: 2px 0 0 2px; transform: translateZ(15px);"></div>
+                        <div style="position: absolute; right: -5px; top: 2px; width: 5px; height: calc(100% - 4px); background: #f5f5f5; border-radius: 2px; transform: translateZ(10px);"></div>
+                    `;
+                    
+                    this.container.appendChild(book);
+                    
+                    this.books.push({
+                        element: book,
+                        x: x,
+                        y: y,
+                        rotY: rotY,
+                        speedX: (Math.random() - 0.5) * 1.2,
+                        speedY: (Math.random() - 0.5) * 1.2,
+                        speedRot: (Math.random() - 0.5) * 1.5,
+                        floatOffset: Math.random() * Math.PI * 2,
+                        floatSpeed: 0.5 + Math.random() * 0.5
+                    });
+                }
+
+                animateBooks() {
+                    const animate = () => {
+                        this.books.forEach(book => {
+                            book.x += book.speedX;
+                            book.y += book.speedY;
+                            book.rotY += book.speedRot;
+                            
+                            const floatY = Math.sin(Date.now() * 0.002 * book.floatSpeed + book.floatOffset) * 15;
+                            
+                            if (book.x > window.innerWidth) book.x = -100;
+                            if (book.x < -100) book.x = window.innerWidth;
+                            if (book.y > window.innerHeight) book.y = -100;
+                            if (book.y < -100) book.y = window.innerHeight;
+                            
+                            gsap.set(book.element, {
+                                x: book.x,
+                                y: book.y + floatY,
+                                rotationY: book.rotY,
+                                rotationX: Math.sin(Date.now() * 0.001) * 10,
+                                duration: 0.1
+                            });
+                        });
+                        
+                        requestAnimationFrame(animate);
+                    };
+                    
+                    animate();
+                }
+            }
+
+            // Initialize 3D books
+            if (document.getElementById('book3dContainer')) {
+                new Advanced3DBooks();
+            }
+
+            // Scroll reveal animation
+            const revealElements = document.querySelectorAll('.reveal');
+            const revealOnScroll = () => {
+                revealElements.forEach(element => {
+                    const windowHeight = window.innerHeight;
+                    const revealTop = element.getBoundingClientRect().top;
+                    const revealPoint = 150;
+                    if (revealTop < windowHeight - revealPoint) {
+                        element.classList.add('active');
+                    }
+                });
+            };
+            
+            window.addEventListener('scroll', revealOnScroll);
+            revealOnScroll();
+
+            // Counter animation for stats
+            const animateCounter = (element, target) => {
+                let current = 0;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        element.textContent = target.toLocaleString();
+                        clearInterval(timer);
+                    } else {
+                        element.textContent = Math.floor(current).toLocaleString();
+                    }
+                }, 30);
+            };
+
+            // Observe counters
+            const counters = document.querySelectorAll('.stat-number');
+            const observerOptions = { threshold: 0.5 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const element = entry.target;
+                        const target = parseInt(element.getAttribute('data-target'));
+                        if (!isNaN(target)) {
+                            animateCounter(element, target);
+                        }
+                        observer.unobserve(element);
+                    }
+                });
+            }, observerOptions);
+            
+            counters.forEach(counter => observer.observe(counter));
+
+            // Load trending books
+            loadTrendingBooks();
+            
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = e.target.value;
+                        if (query.length > 2) {
+                            window.location.href = `/book-recycler/pages/book-listing.html?search=${encodeURIComponent(query)}`;
+                        }
+                    }
+                });
+            }
+        });
+
+        // Check authentication
+        async function checkAuth() {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                try {
+                    const response = await fetch('/book-recycler/php/api/auth.php?action=user-info', {
+                        credentials: 'include'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        document.getElementById('authButtons').innerHTML = `
+                            <span style="color: #ff6b6b; margin-right: 1rem;">Welcome, ${data.user.full_name}</span>
+                            <button onclick="logout()" style="background: rgba(255,107,107,0.2); border: none; padding: 0.5rem 1rem; border-radius: 10px; color: #ff6b6b; cursor: pointer;">Logout</button>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Auth check failed:', error);
+                }
+            }
+        }
+
+        // Load trending books from API
+        async function loadTrendingBooks() {
+            const container = document.getElementById('trending-books');
+            if (!container) return;
+            
+            try {
+                const response = await fetch('/book-recycler/php/api/books.php?action=trending&limit=6');
+                const data = await response.json();
+                
+                if (data.success && data.books && data.books.length > 0) {
+                    container.innerHTML = data.books.map(book => `
+                        <div class="book-card-premium" onclick="window.location.href='/book-recycler/pages/book-detail.html?id=${book.book_id}'">
+                            <img src="/book-recycler/php/uploads/${book.image_path || 'default-book.jpg'}" alt="${escapeHtml(book.title)}" class="book-image" onerror="this.src='/book-recycler/assets/images/default-book.jpg'">
+                            <div style="padding: 1.5rem;">
+                                <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: #fff;">${escapeHtml(book.title)}</h3>
+                                <p style="color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">by ${escapeHtml(book.author)}</p>
+                                <div style="color: #ffa502; margin-bottom: 0.5rem;">${generateStarRating(book.avg_rating)}</div>
+                                <p style="color: #ff6b6b; font-size: 1.3rem; font-weight: bold;">$${parseFloat(book.price).toFixed(2)}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = getSampleBooks();
+                }
+            } catch (error) {
+                console.error('Failed to load trending books:', error);
+                container.innerHTML = getSampleBooks();
+            }
+        }
+
+        function getSampleBooks() {
+            return `
+                <div class="book-card-premium" onclick="window.location.href='/book-recycler/pages/book-detail.html?id=1'">
+                    <img src="/book-recycler/assets/images/default-book.jpg" class="book-image">
+                    <div style="padding: 1.5rem;">
+                        <h3 style="color:#fff;">The Pragmatic Programmer</h3>
+                        <p style="color:rgba(255,255,255,0.7);">by David Thomas</p>
+                        <div style="color:#ffa502;">★★★★★</div>
+                        <p style="color:#ff6b6b; font-size:1.3rem; font-weight:bold;">$35.99</p>
+                    </div>
+                </div>
+                <div class="book-card-premium" onclick="window.location.href='/book-recycler/pages/book-detail.html?id=2'">
+                    <img src="/book-recycler/assets/images/default-book.jpg" class="book-image">
+                    <div style="padding: 1.5rem;">
+                        <h3 style="color:#fff;">Clean Code</h3>
+                        <p style="color:rgba(255,255,255,0.7);">by Robert C. Martin</p>
+                        <div style="color:#ffa502;">★★★★☆</div>
+                        <p style="color:#ff6b6b; font-size:1.3rem; font-weight:bold;">$42.50</p>
+                    </div>
+                </div>
+                <div class="book-card-premium" onclick="window.location.href='/book-recycler/pages/book-detail.html?id=3'">
+                    <img src="/book-recycler/assets/images/default-book.jpg" class="book-image">
+                    <div style="padding: 1.5rem;">
+                        <h3 style="color:#fff;">Introduction to Algorithms</h3>
+                        <p style="color:rgba(255,255,255,0.7);">by Thomas Cormen</p>
+                        <div style="color:#ffa502;">★★★★★</div>
+                        <p style="color:#ff6b6b; font-size:1.3rem; font-weight:bold;">$55.00</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateStarRating(rating) {
+            const fullStars = Math.floor(rating || 0);
+            let stars = '';
+            for (let i = 0; i < fullStars; i++) stars += '★';
+            for (let i = stars.length; i < 5; i++) stars += '☆';
+            return stars;
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function logout() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_name');
+            localStorage.removeItem('user_email');
+            localStorage.removeItem('user_phone');
+            window.location.href = '/book-recycler/pages/index.html';
+        }
+    </script>
+</body>
+</html>
