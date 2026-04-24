@@ -1,1 +1,29 @@
-{"rewrites":[{"source":"/(.*)","destination":"/$1"}]}
+{
+  "buildCommand": "npm run build || true",
+  "outputDirectory": "./",
+  "public": true,
+  "rewrites": [
+    {
+      "source": "/(?!.*\\.(?:js|css|json|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot)$).*",
+      "destination": "/$0.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*).html",
+      "destination": "/$1",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    }
+  ]
+}
