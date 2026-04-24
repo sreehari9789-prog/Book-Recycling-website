@@ -3,8 +3,8 @@
    API Integration & UI Functionality
    ======================================== */
 
-// API Configuration
-const API_BASE_URL = '/book-recycler/php/api';
+// API Configuration - Updated to match actual file structure
+const API_BASE_URL = '';
 let currentUser = null;
 
 // ========================================
@@ -74,7 +74,7 @@ async function handleLogin(email, password) {
             currentUser = data.user;
             showNotification('Login successful!', 'success');
             setTimeout(() => {
-                window.location.href = '/pages/dashboard.html';
+                window.location.href = '/dashboard.html';
             }, 1500);
             return true;
         } else {
@@ -100,7 +100,7 @@ async function handleSignup(userData) {
         if (data.success) {
             showNotification('Account created successfully! Please login.', 'success');
             setTimeout(() => {
-                window.location.href = '/pages/login.html';
+                window.location.href = '/login.html';
             }, 2000);
             return true;
         } else {
@@ -123,7 +123,7 @@ async function logout() {
         currentUser = null;
         showNotification('Logged out successfully', 'success');
         setTimeout(() => {
-            window.location.href = '/pages/index.html';
+            window.location.href = '/index.html';
         }, 1000);
     } catch (error) {
         console.error('Logout failed:', error);
@@ -290,10 +290,10 @@ function displayBooks(books, container) {
     
     container.innerHTML = books.map(book => `
         <div class="book-card" onclick="viewBookDetail(${book.book_id})">
-            <img src="/assets/images/${book.image_path || 'default-book.jpg'}" 
+            <img src="/uploads/${book.image_path || 'default-book.jpg'}" 
                  alt="${escapeHtml(book.title)}" 
                  class="book-image"
-                 onerror="this.src='/assets/images/default-book.jpg'">
+                 onerror="this.src='/uploads/default-book.jpg'">
             <div class="book-info">
                 <h3 class="book-title">${escapeHtml(book.title)}</h3>
                 <p class="book-author">by ${escapeHtml(book.author)}</p>
@@ -365,7 +365,7 @@ function showNotification(message, type = 'info') {
 }
 
 function viewBookDetail(bookId) {
-    window.location.href = `/pages/book-detail.html?id=${bookId}`;
+    window.location.href = `/book-detail.html?id=${bookId}`;
 }
 
 // ========================================
@@ -408,7 +408,7 @@ async function performSearch(query) {
         }
     } else {
         // Redirect to search results page
-        window.location.href = `/pages/book-listing.html?search=${encodeURIComponent(query)}`;
+        window.location.href = `/book-listing.html?search=${encodeURIComponent(query)}`;
     }
 }
 
