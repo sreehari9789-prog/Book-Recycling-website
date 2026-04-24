@@ -4,6 +4,10 @@
   "public": true,
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "/:path*.php"
+    },
+    {
       "source": "/(?!.*\\.(?:js|css|json|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot)$).*",
       "destination": "/$0.html"
     }
@@ -22,8 +26,58 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=3600, must-revalidate"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.js$",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.css$",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.php$",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "PHP_VERSION": "8.1"
+  },
+  "functions": {
+    "api/*.php": {
+      "runtime": "php-8.1"
+    },
+    "*.php": {
+      "runtime": "php-8.1"
+    }
+  }
 }
